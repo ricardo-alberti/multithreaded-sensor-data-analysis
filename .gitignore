@@ -1,0 +1,5 @@
+*.o
+mqtt_senzemo_cx_bg.json
+senzemo_cx_bg.json
+sensor-data-analysis
+/build
