@@ -18,7 +18,7 @@ else
 fi
 
 echo "Compiling main.c"
-gcc -g $FLAGS -c src/main.c -o $OUT_DIR/main.o
+gcc $FLAGS -c src/main.c -o $OUT_DIR/main.o
 echo "Linking object files"
 gcc $FLAGS $OUT_DIR/main.o $OUT_DIR/yyjson.o -o sensor-data-analysis
 
