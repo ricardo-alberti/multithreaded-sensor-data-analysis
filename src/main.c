@@ -19,31 +19,30 @@ City caxias = { 0 };
 Log_Buffer log_buffer = { 0 };
 Record_Buffer rec_buffer = { 0 };
 
+static void
+init_city(City *city)
+{
+    city->lower_temp = INT_MAX;
+    city->higher_temp = INT_MIN;
+    city->lower_airpressure = INT_MAX;
+    city->higher_airpressure = INT_MIN;
+    city->lower_humidity = INT_MAX;
+    city->higher_humidity = INT_MIN;
+    city->period_start = INT64_MAX;
+    city->period_end = 0;
+}
+
 int
 main()
 {
     const char* paths[] = { JSON_PATHS };
+    const int num_files = sizeof(paths) / sizeof(paths[0]);
 
-    bento.lower_temp = INT_MAX;
-    bento.higher_temp = INT_MIN;
-    bento.lower_airpressure = INT_MAX;
-    bento.higher_airpressure = INT_MIN;
-    bento.lower_humidity = INT_MAX;
-    bento.higher_humidity = INT_MIN;
-    bento.period_start = INT64_MAX;
-    bento.period_end = 0;
+    init_city(&bento);
+    init_city(&caxias);
 
-    caxias.lower_temp = INT_MAX;
-    caxias.higher_temp = INT_MIN;
-    caxias.lower_airpressure = INT_MAX;
-    caxias.higher_airpressure = INT_MIN;
-    caxias.lower_humidity = INT_MAX;
-    caxias.higher_humidity = INT_MIN;
-    caxias.period_start = INT64_MAX;
-    caxias.period_end = 0;
-
-    analyse(paths, sizeof(paths) / sizeof(paths[0]));
-    print_results();
+    analyse(paths, num_files);
+    print_results(paths, num_files);
 
     return 0;
 }
