@@ -35,6 +35,9 @@ init_city(City *city)
 int
 main()
 {
+    clock_t start;
+    start = clock();
+
     const char* paths[] = { JSON_PATHS };
     const int num_files = sizeof(paths) / sizeof(paths[0]);
 
@@ -42,7 +45,7 @@ main()
     init_city(&caxias);
 
     analyse(paths, num_files);
-    print_results(paths, num_files);
+    print_results(start, paths, num_files);
 
     return 0;
 }

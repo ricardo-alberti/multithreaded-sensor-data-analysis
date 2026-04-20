@@ -59,6 +59,14 @@ calculate_average(double sum, double count)
     return (count > 0) ? sum / count : 0.0;
 }
 
+// calcula o tempo de execução do programa
+double
+calculate_execution_time(clock_t start_time)
+{
+    clock_t end = clock();
+    return ((double) (end - start_time)) / CLOCKS_PER_SEC;
+}
+
 // imprime separador
 void
 print_separator(const char *color, const char *sep)
@@ -225,23 +233,19 @@ print_performance_section(double exec_time, const char **paths, int num_files)
 
 // impressão principal
 void
-print_results(const char** paths, int num_files)
+print_results(clock_t start_time, const char** paths, int num_files)
 {
     // informações dos arquivos
     // TODO: enviar as informações de cada arquivo
     print_header();
-    print_file_info(
-        paths[0],
-        0,
-        "00/00/0000",
-        "00/00/0000"
-    );
-    print_file_info(
-        paths[1],
-        0,
-        "00/00/0000",
-        "00/00/0000"
-    );
+    for (int i = 0; i < num_files; i++) {
+        print_file_info(
+            paths[i],
+            0,
+            "00/00/0000",
+            "00/00/0000"
+        );
+    }
 
     // temperatura
     print_section_header(SECTION_TEMPERATURE, COL_HEADER_METRIC, 1);
@@ -274,7 +278,10 @@ print_results(const char** paths, int num_files)
     print_sf_row("Bento Gonçalves", "SF1, SF2");
 
     // desempenho
-    // TODO: enviar o tempo de execução calculado
     printf("\n\n");
-    print_performance_section(0, paths, num_files);
+    print_performance_section(
+        calculate_execution_time(start_time),
+        paths,
+        num_files
+    );
 }

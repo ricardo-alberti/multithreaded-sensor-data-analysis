@@ -13,13 +13,13 @@ The program separates tasks into threads for data reading, statistical analysis,
 
 #### Build
 
-`chmod +x compile.sh`
+```chmod +x compile.sh```
 
-`./compile.sh`
+```./compile.sh```
 
 #### Run
 
-`./sensor-data-analysis`
+```./sensor-data-analysis```
 
 #### Notes
 - The script creates the build/ directory automatically.
@@ -41,13 +41,13 @@ O programa separa as tarefas em threads para leitura de dados, análise estatís
 
 #### Compilar
 
-`chmod +x compile.sh`
+```chmod +x compile.sh```
 
-`./compile.sh`
+```./compile.sh```
 
 #### Executar
 
-`./sensor-data-analysis`
+```./sensor-data-analysis```
 
 #### Observações
 - O script cria automaticamente a pasta build/.
