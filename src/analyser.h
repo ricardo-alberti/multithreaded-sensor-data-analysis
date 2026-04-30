@@ -1,3 +1,6 @@
+#define kB(value) (value * 1024)
+#define MB(value) (kB(value) * 1024)
+
 /*
 #define JSON_PATHS \
     "data/mqtt_senzemo_cx_bg.json", \
@@ -11,21 +14,21 @@
 #define LOG_PATH "logs/analysis.log"
 
 #define MESSAGE_LEN 64
-#define MAX_LOG_MESSAGES 32
-#define MAX_RECORDS 32
+#define MAX_LOG_MESSAGES MB(4)
+#define MAX_RECORDS MB(16)
 
 typedef struct {
     char messages[MAX_LOG_MESSAGES][MESSAGE_LEN];   // buffer circular
-    int head;                                       // onde produtor escreve
-    int tail;                                       // onde logger lê                                     
-    int count;                                      // menssagens para ler
+    int head;                                       // produtor qualquer escreve
+    int tail;                                       // logger lê                                     
+    int count;                                      // número de menssagens para ler
     pthread_mutex_t lock;
 } Log_Buffer;
 
 typedef struct {
     yyjson_doc* docs[MAX_RECORDS]; 
-    int head;                                       // onde produtor escreve
-    int tail;                                       // onde logger lê                                     
+    int head;                                       // onde json_reader escreve
+    int tail;                                       // onde record_resolver lê
     int count;                                      // menssagens para ler
     pthread_mutex_t lock;
 } Record_Buffer;
