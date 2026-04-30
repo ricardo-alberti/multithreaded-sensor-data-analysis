@@ -70,6 +70,7 @@ logger(void* path)
 
         snprintf(t_buf, sizeof(t_buf), "%s.%03ld", f_buf, (long)(ts.tv_nsec / 1000000));
 
+        // exibir tempo e mensagem no log
         fprintf(log, "[%s] %s\n", t_buf, msg);  
     }
     

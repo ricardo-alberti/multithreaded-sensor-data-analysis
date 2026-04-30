@@ -51,9 +51,11 @@ read_json(void* path)
         }
     }
 
+    // criar log de arquivo lido
     snprintf(log_msg, sizeof(log_msg), "Arquivo %s Lido", path_str);
     log_push(log_msg);    
 
+    // desalocar memória do documento JSON
     yyjson_doc_free(doc);
     pthread_exit(NULL);
 }
