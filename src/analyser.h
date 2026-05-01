@@ -15,7 +15,7 @@
 
 #define MESSAGE_LEN 64
 #define MAX_LOG_MESSAGES MB(4)
-#define MAX_RECORDS MB(16)
+#define MAX_RECORDS MB(4)
 
 typedef struct {
     char messages[MAX_LOG_MESSAGES][MESSAGE_LEN];   // buffer circular
@@ -23,6 +23,8 @@ typedef struct {
     int tail;                                       // logger lê
     int count;                                      // número de menssagens para ler
     pthread_mutex_t lock;
+    pthread_cond_t not_empty;
+    pthread_cond_t not_full;
 } Log_Buffer;
 
 typedef struct {
@@ -31,6 +33,8 @@ typedef struct {
     int tail;                                       // onde record_resolver lê
     int count;                                      // menssagens para ler
     pthread_mutex_t lock;
+    pthread_cond_t not_empty;
+    pthread_cond_t not_full;
 } Record_Buffer;
 
 typedef struct {

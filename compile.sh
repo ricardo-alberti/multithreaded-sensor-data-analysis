@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # optmization flags
-# FLAGS="-O3 -Wall -Werror -Wextra"
+FLAGS="-O3 -Wall -Werror -Wextra"
 
 # compilation for debugging
-FLAGS="-g -Wall -Werror -Wextra"
+# FLAGS="-g -Wall -Werror -Wextra"
 OUT_DIR="build"
 
 mkdir -p $OUT_DIR

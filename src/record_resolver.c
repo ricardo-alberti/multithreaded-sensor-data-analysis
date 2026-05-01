@@ -1,4 +1,4 @@
-time_t
+inline time_t
 parse_iso8601(const char *timestamp)
 {
     struct tm tm = {0};
@@ -14,45 +14,38 @@ parse_iso8601(const char *timestamp)
 void
 record_push(yyjson_doc* doc)
 {
-    for (;;)
+    pthread_mutex_lock(&rec_buffer.lock);
+
+    while (rec_buffer.count == MAX_RECORDS)
     {
-        pthread_mutex_lock(&rec_buffer.lock);
-
-        if (rec_buffer.count < MAX_RECORDS)
-        {
-            rec_buffer.docs[rec_buffer.head] = doc;
-            rec_buffer.head = (rec_buffer.head + 1) % MAX_RECORDS;
-            rec_buffer.count++;
-
-            pthread_mutex_unlock(&rec_buffer.lock);
-            return;
-        }
-
-        pthread_mutex_unlock(&rec_buffer.lock);
-        sched_yield();
+        pthread_cond_wait(&rec_buffer.not_full, &rec_buffer.lock);
     }
+
+    rec_buffer.docs[rec_buffer.head] = doc;
+    rec_buffer.head = (rec_buffer.head + 1) % MAX_RECORDS;
+    rec_buffer.count++;
+
+    pthread_cond_signal(&rec_buffer.not_empty);
+    pthread_mutex_unlock(&rec_buffer.lock);
 }
 
 yyjson_doc*
 record_pop()
 {
-    for (;;)
+    pthread_mutex_lock(&rec_buffer.lock);
+
+    while (rec_buffer.count == 0)
     {
-        pthread_mutex_lock(&rec_buffer.lock);
-
-        if (rec_buffer.count > 0)
-        {
-            yyjson_doc* doc = rec_buffer.docs[rec_buffer.tail];
-            rec_buffer.tail = (rec_buffer.tail + 1) % MAX_RECORDS;
-            rec_buffer.count--;
-
-            pthread_mutex_unlock(&rec_buffer.lock);
-            return doc;
-        }
-
-        pthread_mutex_unlock(&rec_buffer.lock);
-        sched_yield();
+        pthread_cond_wait(&rec_buffer.not_empty, &rec_buffer.lock);
     }
+
+    yyjson_doc* doc = rec_buffer.docs[rec_buffer.tail];
+    rec_buffer.tail = (rec_buffer.tail + 1) % MAX_RECORDS;
+    rec_buffer.count--;
+
+    pthread_cond_signal(&rec_buffer.not_full);
+    pthread_mutex_unlock(&rec_buffer.lock);
+    return doc;
 }
 
 void
@@ -156,9 +149,12 @@ process_payload(yyjson_doc *payload_doc, City *city)
 void*
 record_resolver(void* args)
 {
+    pthread_mutex_init(&rec_buffer.lock, NULL);
+    pthread_cond_init(&rec_buffer.not_empty, NULL);
+    pthread_cond_init(&rec_buffer.not_full, NULL);
+
     (void)args;
 
-    // busy wait
     for (;;)
     {
         yyjson_doc* doc = record_pop();
@@ -180,9 +176,12 @@ record_resolver(void* args)
         }
 
         process_payload(doc, city);
-
         yyjson_doc_free(doc);
     }
+
+    pthread_mutex_destroy(&rec_buffer.lock);
+    pthread_cond_destroy(&rec_buffer.not_empty);
+    pthread_cond_destroy(&rec_buffer.not_full);
 
     return NULL;
 }
