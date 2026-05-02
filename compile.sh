@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # optmization flags
-FLAGS="-O3 -Wall -Werror -Wextra"
+FLAGS="-O3 -Wall -Werror -Wextra -march=native -flto -DNDEBUG -fomit-frame-pointer"
 
 # compilation for debugging
 # FLAGS="-g -Wall -Werror -Wextra"

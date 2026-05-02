@@ -14,8 +14,8 @@
 #define LOG_PATH "logs/analysis.log"
 
 #define MESSAGE_LEN 64
-#define MAX_LOG_MESSAGES MB(4)
-#define MAX_RECORDS MB(4)
+#define MAX_LOG_MESSAGES MB(2)
+#define MAX_RECORDS MB(2)
 
 typedef struct {
     char messages[MAX_LOG_MESSAGES][MESSAGE_LEN];   // buffer circular

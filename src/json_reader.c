@@ -6,8 +6,9 @@ read_json(void *arg)
     const char *path_str = file->path;
     char log_msg[MESSAGE_LEN];
 
+    yyjson_read_flag flg = YYJSON_READ_INSITU;
     yyjson_read_err err;
-    yyjson_doc *doc = yyjson_read_file(path_str, 0, NULL, &err);
+    yyjson_doc *doc = yyjson_read_file(path_str, flg, NULL, &err);
 
     if (!doc)
     {
