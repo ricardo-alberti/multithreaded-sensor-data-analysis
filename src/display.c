@@ -155,13 +155,31 @@ print_battery_row(const char *name, const City *city)
 }
 
 void
-print_sf_row(const char *name, const char *sfs)
+print_sf_row(const char *name, const City *city)
 {
+    char buffer[64] = "";
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (city->spreading_factors[i])
+        {
+            char sf[8];
+
+            sprintf(
+                sf, "%sSF%d",
+                buffer[0] ? ", " : "",
+                i + 7
+            );
+
+            strcat(buffer, sf);
+        }
+    }
+
     printf(
         "%-*s | %s\n",
         utf8_field_width(name, 17),
         name,
-        sfs
+        buffer[0] ? buffer : "Nenhum"
     );
 }
 
@@ -280,8 +298,8 @@ print_results(clock_t start_time, File_Info *files, int num_files)
     // TODO: enviar o spreading factor calculado
     printf("\n\n");
     print_section_header(SECTION_SF, COL_HEADER_SF, 0);
-    print_sf_row("Caxias do Sul", "SF1, SF2, SF3");
-    print_sf_row("Bento Gonçalves", "SF1, SF2");
+    print_sf_row("Caxias do Sul", &caxias);
+    print_sf_row("Bento Gonçalves", &bento);
 
     // desempenho
     printf("\n\n");

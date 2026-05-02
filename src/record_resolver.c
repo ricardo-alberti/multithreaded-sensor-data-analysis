@@ -2,7 +2,7 @@ time_t
 parse_iso8601(const char *timestamp)
 {
     struct tm tm = {0};
-    
+
     if (strptime(timestamp, "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
     {
         return 0;
@@ -14,11 +14,11 @@ parse_iso8601(const char *timestamp)
 void
 record_push(yyjson_doc* doc)
 {
-    for (;;) 
+    for (;;)
     {
         pthread_mutex_lock(&rec_buffer.lock);
 
-        if (rec_buffer.count < MAX_RECORDS) 
+        if (rec_buffer.count < MAX_RECORDS)
         {
             rec_buffer.docs[rec_buffer.head] = doc;
             rec_buffer.head = (rec_buffer.head + 1) % MAX_RECORDS;
@@ -29,7 +29,7 @@ record_push(yyjson_doc* doc)
         }
 
         pthread_mutex_unlock(&rec_buffer.lock);
-        sched_yield(); 
+        sched_yield();
     }
 }
 
@@ -39,19 +39,19 @@ record_pop()
     for (;;)
     {
         pthread_mutex_lock(&rec_buffer.lock);
-        
+
         if (rec_buffer.count > 0)
         {
             yyjson_doc* doc = rec_buffer.docs[rec_buffer.tail];
             rec_buffer.tail = (rec_buffer.tail + 1) % MAX_RECORDS;
             rec_buffer.count--;
-            
+
             pthread_mutex_unlock(&rec_buffer.lock);
             return doc;
         }
-        
+
         pthread_mutex_unlock(&rec_buffer.lock);
-        sched_yield(); 
+        sched_yield();
     }
 }
 
@@ -82,7 +82,7 @@ update_city_stats(City *city, const char *variable, double value, const char *ti
             city->lower_temp = value;
             city->lower_temp_time = parsed_time;
         }
-    } 
+    }
     else if (strcmp(variable, "humidity") == 0)
     {
         city->sum_humidity += value;
@@ -121,6 +121,10 @@ update_city_stats(City *city, const char *variable, double value, const char *ti
         {
             city->battery_final = value;
         }
+    }
+    else if (strcmp(variable, "lora_spreading_factor") == 0)
+    {
+        city->spreading_factors[(int)value - 7] = 1;
     }
 }
 
@@ -168,7 +172,7 @@ record_resolver(void* args)
 
         yyjson_val *dev_id_val = yyjson_obj_get(root, "device_name");
         const char *dev_id_str = yyjson_get_str(dev_id_val);
-        
+
         City* city = &bento;
         if (strcmp(dev_id_str, "Caxias - Praça (S2)") == 0)
         {
@@ -177,7 +181,7 @@ record_resolver(void* args)
 
         process_payload(doc, city);
 
-        yyjson_doc_free(doc); 
+        yyjson_doc_free(doc);
     }
 
     return NULL;

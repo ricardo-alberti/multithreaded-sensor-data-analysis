@@ -67,6 +67,8 @@ typedef struct {
 
     double battery_final;
     time_t period_end;
+
+    int spreading_factors[6];
 } City;
 
 extern City bento;
