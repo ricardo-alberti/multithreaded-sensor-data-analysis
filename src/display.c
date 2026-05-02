@@ -61,10 +61,13 @@ calculate_average(double sum, double count)
 
 // calcula o tempo de execução do programa
 double
-calculate_execution_time(clock_t start_time)
+calculate_execution_time(struct timespec start)
 {
-    clock_t end = clock();
-    return ((double) (end - start_time)) / CLOCKS_PER_SEC;
+    struct timespec end;
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    return (end.tv_sec - start.tv_sec) + 
+           (end.tv_nsec - start.tv_nsec) / 1e9;
 }
 
 // imprime separador
@@ -262,7 +265,7 @@ print_performance_section(double exec_time, File_Info *files, int num_files)
 
 // impressão principal
 void
-print_results(clock_t start_time, File_Info *files, int num_files)
+print_results(struct timespec start_time, File_Info *files, int num_files)
 {
     // informações dos arquivos
     print_header();

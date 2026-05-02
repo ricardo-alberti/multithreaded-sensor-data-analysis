@@ -1,16 +1,3 @@
-inline time_t
-parse_iso8601(const char *timestamp)
-{
-    struct tm tm = {0};
-
-    if (strptime(timestamp, "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
-    {
-        return 0;
-    }
-
-    return mktime(&tm);
-}
-
 void
 record_push(yyjson_doc* doc)
 {
@@ -48,76 +35,66 @@ record_pop()
     return doc;
 }
 
-void
-update_city_stats(City *city, const char *variable, double value, const char *time)
+void update_city_stats(City *city, const char *variable, double value, const char *time)
 {
-    time_t parsed_time = parse_iso8601(time);
+    time_t parsed_time = (time[17]-'0')*10 + (time[18]-'0') +
+                         (time[14]-'0')*600 + (time[15]-'0')*60; 
+    
+    if (parsed_time > city->period_end)   city->period_end = parsed_time;
+    if (parsed_time < city->period_start) city->period_start = parsed_time;
 
-    if (parsed_time > city->period_end)
+    switch (variable[0]) 
     {
-        city->period_end = parsed_time;
-    }
-    if (parsed_time < city->period_start)
-    {
-        city->period_start = parsed_time;
-    }
+        case 't': // temperature
+            city->sum_temp += value;
+            if (value > city->higher_temp) {
+                city->higher_temp = value;
+                city->higher_temp_time = parsed_time;
+            }
+            if (value < city->lower_temp) {
+                city->lower_temp = value;
+                city->lower_temp_time = parsed_time;
+            }
+            break;
+        case 'h': // humidity
+            city->sum_humidity += value;
+            if (value > city->higher_humidity) {
+                city->higher_humidity = value;
+                city->higher_humidity_time = parsed_time;
+            }
+            if (value < city->lower_humidity) {
+                city->lower_humidity = value;
+                city->lower_humidity_time = parsed_time;
+            }
+            break;
+        case 'a': // airpressure
+            city->sum_airpressure += value;
+            if (value > city->higher_airpressure) {
+                city->higher_airpressure = value;
+                city->higher_airpressure_time = parsed_time;
+            }
+            if (value < city->lower_airpressure) {
+                city->lower_airpressure = value;
+                city->lower_airpressure_time = parsed_time;
+            }
+            break;
 
-    if (strcmp(variable, "temperature") == 0)
-    {
-        city->sum_temp += value;
-        if (value > city->higher_temp)
-        {
-            city->higher_temp = value;
-            city->higher_temp_time = parsed_time;
-        }
-        if (value < city->lower_temp)
-        {
-            city->lower_temp = value;
-            city->lower_temp_time = parsed_time;
-        }
-    }
-    else if (strcmp(variable, "humidity") == 0)
-    {
-        city->sum_humidity += value;
-        if (value > city->higher_humidity)
-        {
-            city->higher_humidity = value;
-            city->higher_humidity_time = parsed_time;
-        }
-        if (value < city->lower_humidity)
-        {
-            city->lower_humidity = value;
-            city->lower_humidity_time = parsed_time;
-        }
-    }
-    else if (strcmp(variable, "airpressure") == 0)
-    {
-        city->sum_airpressure += value;
-        if (value > city->higher_airpressure)
-        {
-            city->higher_airpressure = value;
-            city->higher_airpressure_time = parsed_time;
-        }
-        if (value < city->lower_airpressure)
-        {
-            city->lower_airpressure = value;
-            city->lower_airpressure_time = parsed_time;
-        }
-    }
-    else if (strcmp(variable, "batterylevel") == 0)
-    {
-        if (city->period_start == parsed_time)
-        {
-            city->battery_initial = value;
-        }
-        if (city->period_end == parsed_time)
-        {
-            city->battery_final = value;
-        }
-    }
-    else if (strcmp(variable, "lora_spreading_factor") == 0)
-    {
-        city->spreading_factors[(int)value - 7] = 1;
+        case 'b': // batterylevel
+            if (parsed_time <= city->period_start) city->battery_initial = value;
+            if (parsed_time >= city->period_end)   city->battery_final = value;
+            break;
+
+        case 'l': // lora_spreading_factor OU lora_bandwidth
+            // checar quinto caracter 's' = lora_spreading
+            if (variable[5] == 's') 
+            {
+                int sf = (int)value;
+                if (sf >= 7 && sf <= 12)
+                {
+                    city->spreading_factors[sf - 7] = 1;
+                }
+            }
+            break;
     }
 }
 
@@ -165,15 +142,9 @@ record_resolver(void* args)
         }
 
         yyjson_val* root = yyjson_doc_get_root(doc);
+        const char *dev_id_str = yyjson_get_str(yyjson_obj_get(root, "device_name"));
 
-        yyjson_val *dev_id_val = yyjson_obj_get(root, "device_name");
-        const char *dev_id_str = yyjson_get_str(dev_id_val);
-
-        City* city = &bento;
-        if (strcmp(dev_id_str, "Caxias - Praça (S2)") == 0)
-        {
-            city = &caxias;
-        }
+        City* city = (dev_id_str && dev_id_str[0] == 'C') ? &caxias : &bento;
 
         process_payload(doc, city);
         yyjson_doc_free(doc);

@@ -1,7 +1,10 @@
-void log_push(char* message) {
+void
+log_push(char* message)
+{
     pthread_mutex_lock(&log_buffer.lock);
 
-    while (log_buffer.count == MAX_LOG_MESSAGES) {
+    while (log_buffer.count == MAX_LOG_MESSAGES)
+    {
         pthread_cond_wait(&log_buffer.not_full, &log_buffer.lock);
     }
 

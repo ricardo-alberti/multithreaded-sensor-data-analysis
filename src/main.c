@@ -18,6 +18,7 @@ City bento = { 0 };
 City caxias = { 0 };
 Log_Buffer log_buffer = { 0 };
 Record_Buffer rec_buffer = { 0 };
+
 File_Info files[] = { FILE_INFOS };
 const int num_files = sizeof(files) / sizeof(files[0]);
 
@@ -37,12 +38,14 @@ init_city(City *city)
 int
 main()
 {
-    clock_t start = clock();
+    struct timespec start;
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     init_city(&bento);
     init_city(&caxias);
 
     analyse(files, num_files);
+
     print_results(start, files, num_files);
 
     return 0;

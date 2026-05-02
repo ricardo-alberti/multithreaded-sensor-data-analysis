@@ -37,8 +37,9 @@ read_json(void *arg)
                 yyjson_doc *payload_doc = yyjson_read(val_str, strlen(val_str), 0);
                 if (payload_doc)
                 {
-                    file->records_count++;
+                    // enviar payload/brute_data para a fila de cálculo de estatísticas
                     record_push(payload_doc);
+                    file->records_count++;
                 }
             }
         }
