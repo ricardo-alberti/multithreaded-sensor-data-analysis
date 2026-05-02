@@ -2,14 +2,14 @@
 #define MB(value) (kB(value) * 1024)
 
 /*
-#define JSON_PATHS \
-    "data/mqtt_senzemo_cx_bg.json", \
-    "data/senzemo_cx_bg.json"
+#define FILE_INFOS \
+    { "data/mqtt_senzemo_cx_bg.json", 0, 0, 0 }, \
+    { "data/senzemo_cx_bg.json",      0, 0, 0 }
 */
 
-#define JSON_PATHS \
-    "data/test_mqtt_senzemo_cx_bg.json", \
-    "data/test_senzemo_cx_bg.json"
+#define FILE_INFOS \
+    { "data/test_mqtt_senzemo_cx_bg.json", 0, 0, 0 }, \
+    { "data/test_senzemo_cx_bg.json",      0, 0, 0 }
 
 #define LOG_PATH "logs/analysis.log"
 
@@ -20,18 +20,25 @@
 typedef struct {
     char messages[MAX_LOG_MESSAGES][MESSAGE_LEN];   // buffer circular
     int head;                                       // produtor qualquer escreve
-    int tail;                                       // logger lê                                     
+    int tail;                                       // logger lê
     int count;                                      // número de menssagens para ler
     pthread_mutex_t lock;
 } Log_Buffer;
 
 typedef struct {
-    yyjson_doc* docs[MAX_RECORDS]; 
+    yyjson_doc* docs[MAX_RECORDS];
     int head;                                       // onde json_reader escreve
     int tail;                                       // onde record_resolver lê
     int count;                                      // menssagens para ler
     pthread_mutex_t lock;
 } Record_Buffer;
+
+typedef struct {
+    const char* path;
+    int records_count;
+    time_t period_start;
+    time_t period_end;
+} File_Info;
 
 // TODO: verificar como calcular spreading factor
 typedef struct {
@@ -66,3 +73,5 @@ extern City bento;
 extern City caxias;
 extern Log_Buffer log_buffer;
 extern Record_Buffer rec_buffer;
+extern File_Info files[];
+extern const int num_files;

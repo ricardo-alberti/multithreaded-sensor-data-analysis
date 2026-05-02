@@ -87,11 +87,21 @@ print_header()
 
 // imprime informações de arquivo
 void
-print_file_info(const char *file_name, double records_count, const char *start_date, const char *end_date)
+print_file_info(const File_Info *file)
 {
-    printf("Arquivo analisado: %s\n", file_name);
-    printf("Total de registros processados: %.0f\n", records_count);
-    printf("Período analisado: %s a %s\n\n", start_date, end_date);
+    char period_start_str[26];
+    char period_end_str[26];
+
+    format_time(file->period_start, period_start_str);
+    format_time(file->period_end, period_end_str);
+
+    printf("Arquivo analisado: %s\n", file->path);
+    printf("Total de registros processados: %d\n", file->records_count);
+    printf(
+        "Período analisado: %s a %s\n\n",
+        period_start_str,
+        period_end_str
+    );
 }
 
 // imprime cabeçalho de seção
@@ -202,27 +212,28 @@ print_airpressure_section(const char *name, const City *city)
 }
 
 void
-print_performance_section(double exec_time, const char **paths, int num_files)
+print_performance_section(double exec_time, File_Info *files, int num_files)
 {
     print_separator(YELLOW, SEPARATOR_SHORT);
     printf(BOLD_WHITE "%s\n" RESET, SECTION_PERFORMANCE);
     print_separator(YELLOW, SEPARATOR_SHORT);
 
     int num_threads = num_files + 2;
-    int thread_id = 1;
 
     printf("Tempo total de execução: %.2f segundos\n", exec_time);
     printf("Threads utilizadas: %d\n", num_threads);
 
-    // threads fixas
-    printf(" - Thread %d: registro de logs\n", thread_id++);
-    printf(" - Thread %d: processamento de registros\n", thread_id++);
+    int thread_id = 1;
 
     // threads de leitura
     for (int i = 0; i < num_files; i++, thread_id++)
     {
-        printf(" - Thread %d: leitura de %s\n", thread_id, paths[i]);
+        printf(" - Thread %d: leitura de %s\n", thread_id, files[i].path);
     }
+
+    // threads fixas
+    printf(" - Thread %d: registro de logs\n", thread_id++);
+    printf(" - Thread %d: processamento de registros\n", thread_id++);
 
     printf("\nArquivo de log gerado: %s\n\n", LOG_PATH);
 
@@ -233,18 +244,13 @@ print_performance_section(double exec_time, const char **paths, int num_files)
 
 // impressão principal
 void
-print_results(clock_t start_time, const char** paths, int num_files)
+print_results(clock_t start_time, File_Info *files, int num_files)
 {
     // informações dos arquivos
-    // TODO: enviar as informações de cada arquivo
     print_header();
-    for (int i = 0; i < num_files; i++) {
-        print_file_info(
-            paths[i],
-            0,
-            "00/00/0000",
-            "00/00/0000"
-        );
+    for (int i = 0; i < num_files; i++)
+    {
+        print_file_info(&files[i]);
     }
 
     // temperatura
@@ -281,7 +287,7 @@ print_results(clock_t start_time, const char** paths, int num_files)
     printf("\n\n");
     print_performance_section(
         calculate_execution_time(start_time),
-        paths,
+        files,
         num_files
     );
 }

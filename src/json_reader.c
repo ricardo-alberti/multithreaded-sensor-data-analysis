@@ -1,7 +1,9 @@
 void*
-read_json(void* path)
+read_json(void *arg)
 {
-    const char* path_str = (const char*)path;
+    File_Info *file = (File_Info*)arg;
+
+    const char *path_str = file->path;
     char log_msg[MESSAGE_LEN];
 
     yyjson_read_flag flg = 0;
@@ -15,7 +17,7 @@ read_json(void* path)
     }
 
     snprintf(log_msg, sizeof(log_msg), "Processando arquivo %s", path_str);
-    log_push(log_msg);    
+    log_push(log_msg);
 
     yyjson_val *root = yyjson_doc_get_root(doc);
 
@@ -44,6 +46,8 @@ read_json(void* path)
                 yyjson_doc *payload = yyjson_read(val_str, strlen(val_str), 0);
                 if (payload)
                 {
+                    file->records_count++;
+
                     // enviar payload/brute_data para a fila de cálculo de estatísticas
                     record_push(payload);
                 }
@@ -53,7 +57,7 @@ read_json(void* path)
 
     // criar log de arquivo lido
     snprintf(log_msg, sizeof(log_msg), "Arquivo %s Lido", path_str);
-    log_push(log_msg);    
+    log_push(log_msg);
 
     // desalocar memória do documento JSON
     yyjson_doc_free(doc);

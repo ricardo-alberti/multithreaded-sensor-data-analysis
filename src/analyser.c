@@ -1,5 +1,5 @@
 void
-analyse(const char** paths, int num_files)
+analyse(File_Info *files, int num_files)
 {
     pthread_t reader_threads[num_files];
     pthread_t logger_thread;
@@ -14,7 +14,7 @@ analyse(const char** paths, int num_files)
     // iniciar threads leitura de jsons
     for (int i = 0; i < num_files; ++i)
     {
-        pthread_create(&reader_threads[i], NULL, read_json, (void*)paths[i]);
+        pthread_create(&reader_threads[i], NULL, read_json, (void*)&files[i]);
     }
 
     // sincronizar threads leitura de jsons

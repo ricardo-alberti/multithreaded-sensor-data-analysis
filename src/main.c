@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>            // medir o tempo de execução
-#include <limits.h>          // INT_MAX e INT_MIN 
+#include <limits.h>          // INT_MAX e INT_MIN
 
 #include "yyjson.h"          // biblioteca para leitura de json
 #include "analyser.h"        // defines e structs do programa
@@ -18,6 +18,8 @@ City bento = { 0 };
 City caxias = { 0 };
 Log_Buffer log_buffer = { 0 };
 Record_Buffer rec_buffer = { 0 };
+File_Info files[] = { FILE_INFOS };
+const int num_files = sizeof(files) / sizeof(files[0]);
 
 static void
 init_city(City *city)
@@ -37,14 +39,11 @@ main()
 {
     clock_t start = clock();
 
-    const char* paths[] = { JSON_PATHS };
-    const int num_files = sizeof(paths) / sizeof(paths[0]);
-
     init_city(&bento);
     init_city(&caxias);
 
-    analyse(paths, num_files);
-    print_results(start, paths, num_files);
+    analyse(files, num_files);
+    print_results(start, files, num_files);
 
     return 0;
 }
