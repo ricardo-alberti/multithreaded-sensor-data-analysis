@@ -1,15 +1,15 @@
 #define kB(value) (value * 1024)
 #define MB(value) (kB(value) * 1024)
 
-/*
 #define FILE_INFOS \
     { "data/mqtt_senzemo_cx_bg.json", 0, 0, 0 }, \
     { "data/senzemo_cx_bg.json",      0, 0, 0 }
-*/
 
+/*
 #define FILE_INFOS \
     { "data/test_mqtt_senzemo_cx_bg.json", 0, 0, 0 }, \
     { "data/test_senzemo_cx_bg.json",      0, 0, 0 }
+*/
 
 #define LOG_PATH "logs/analysis.log"
 

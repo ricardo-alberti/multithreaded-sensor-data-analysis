@@ -1,5 +1,7 @@
-#include <stdio.h>
+#define _XOPEN_SOURCE 700    // strptime e outras funções de tempo
+
 #include <pthread.h>
+#include <time.h>            // medir o tempo de execução
 
 #include "yyjson.h"          // biblioteca para leitura de json
 #include "analyser.h"        // defines e structs do programa

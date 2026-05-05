@@ -1,3 +1,26 @@
+static time_t
+parse_iso8601(const char *s)
+{
+    int year  = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + (s[2] - '0') * 10 + (s[3] - '0');
+    int month = (s[5] - '0') * 10 + (s[6] - '0');
+    int day   = (s[8] - '0') * 10 + (s[9] - '0');
+    int hour  = (s[11] - '0') * 10 + (s[12] - '0');
+    int min   = (s[14] - '0') * 10 + (s[15] - '0');
+    int sec   = (s[17] - '0') * 10 + (s[18] - '0');
+
+    if (month < 3)
+    {
+        month += 12;
+        year -= 1;
+    }
+
+    long long days = (365LL * year) + (year / 4) - (year / 100) + (year / 400) +
+                     (306 * (month + 1) / 10) + day - 719561;
+
+    // TODO: configurar o fuso horário no inicio do programa, para não precisar adicionar 3 horas aqui
+    return (time_t)(days * 86400LL + hour * 3600 + min * 60 + sec) + 3 * 3600;
+}
+
 void
 record_push(yyjson_doc* doc)
 {
@@ -35,66 +58,70 @@ record_pop()
     return doc;
 }
 
-void update_city_stats(City *city, const char *variable, double value, const char *time)
+void
+update_city_stats(City *city, const char *variable, double value, const char *time)
 {
-    time_t parsed_time = (time[17]-'0')*10 + (time[18]-'0') +
-                         (time[14]-'0')*600 + (time[15]-'0')*60; 
-    
+    time_t parsed_time = parse_iso8601(time); 
+
     if (parsed_time > city->period_end)   city->period_end = parsed_time;
     if (parsed_time < city->period_start) city->period_start = parsed_time;
 
-    switch (variable[0]) 
+    if (strcmp(variable, "temperature") == 0)
     {
-        case 't': // temperature
-            city->sum_temp += value;
-            if (value > city->higher_temp) {
-                city->higher_temp = value;
-                city->higher_temp_time = parsed_time;
-            }
-            if (value < city->lower_temp) {
-                city->lower_temp = value;
-                city->lower_temp_time = parsed_time;
-            }
-            break;
-        case 'h': // humidity
-            city->sum_humidity += value;
-            if (value > city->higher_humidity) {
-                city->higher_humidity = value;
-                city->higher_humidity_time = parsed_time;
-            }
-            if (value < city->lower_humidity) {
-                city->lower_humidity = value;
-                city->lower_humidity_time = parsed_time;
-            }
-            break;
-        case 'a': // airpressure
-            city->sum_airpressure += value;
-            if (value > city->higher_airpressure) {
-                city->higher_airpressure = value;
-                city->higher_airpressure_time = parsed_time;
-            }
-            if (value < city->lower_airpressure) {
-                city->lower_airpressure = value;
-                city->lower_airpressure_time = parsed_time;
-            }
-            break;
-
-        case 'b': // batterylevel
-            if (parsed_time <= city->period_start) city->battery_initial = value;
-            if (parsed_time >= city->period_end)   city->battery_final = value;
-            break;
-
-        case 'l': // lora_spreading_factor OU lora_bandwidth
-            // checar quinto caracter 's' = lora_spreading
-            if (variable[5] == 's') 
-            {
-                int sf = (int)value;
-                if (sf >= 7 && sf <= 12)
-                {
-                    city->spreading_factors[sf - 7] = 1;
-                }
-            }
-            break;
+        city->sum_temp += value;
+        if (value > city->higher_temp)
+        {
+            city->higher_temp = value;
+            city->higher_temp_time = parsed_time;
+        }
+        if (value < city->lower_temp)
+        {
+            city->lower_temp = value;
+            city->lower_temp_time = parsed_time;
+        }
+    }
+    else if (strcmp(variable, "humidity") == 0)
+    {
+        city->sum_humidity += value;
+        if (value > city->higher_humidity)
+        {
+            city->higher_humidity = value;
+            city->higher_humidity_time = parsed_time;
+        }
+        if (value < city->lower_humidity)
+        {
+            city->lower_humidity = value;
+            city->lower_humidity_time = parsed_time;
+        }
+    }
+    else if (strcmp(variable, "airpressure") == 0)
+    {
+        city->sum_airpressure += value;
+        if (value > city->higher_airpressure)
+        {
+            city->higher_airpressure = value;
+            city->higher_airpressure_time = parsed_time;
+        }
+        if (value < city->lower_airpressure)
+        {
+            city->lower_airpressure = value;
+            city->lower_airpressure_time = parsed_time;
+        }
+    }
+    else if (strcmp(variable, "batterylevel") == 0)
+    {
+        if (city->period_start == parsed_time)
+        {
+            city->battery_initial = value;
+        }
+        if (city->period_end == parsed_time)
+        {
+            city->battery_final = value;
+        }
+    }
+    else if (strcmp(variable, "lora_spreading_factor") == 0)
+    {
+        city->spreading_factors[(int)value - 7] = 1;
     }
 }
 
