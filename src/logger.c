@@ -8,6 +8,7 @@ log_push(char* message)
         pthread_cond_wait(&log_buffer.not_full, &log_buffer.lock);
     }
 
+    // copiar mensagem para buffer circular
     snprintf(log_buffer.messages[log_buffer.head], MESSAGE_LEN, "%s", message);
     
     log_buffer.head = (log_buffer.head + 1) % MAX_LOG_MESSAGES;
@@ -45,7 +46,6 @@ logger(void* path)
 
         char msg[MESSAGE_LEN];
         strncpy(msg, log_buffer.messages[log_buffer.tail], MESSAGE_LEN - 1);
-        msg[MESSAGE_LEN - 1] = '\0';
 
         log_buffer.tail = (log_buffer.tail + 1) % MAX_LOG_MESSAGES;
         log_buffer.count--;

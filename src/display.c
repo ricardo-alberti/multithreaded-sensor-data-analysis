@@ -298,7 +298,6 @@ print_results(struct timespec start_time, File_Info *files, int num_files)
     print_battery_row("Bento Gonçalves", &bento);
 
     // spreading factors
-    // TODO: enviar o spreading factor calculado
     printf("\n\n");
     print_section_header(SECTION_SF, COL_HEADER_SF, 0);
     print_sf_row("Caxias do Sul", &caxias);

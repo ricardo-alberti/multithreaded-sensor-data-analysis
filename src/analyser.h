@@ -1,6 +1,7 @@
 #define kB(value) (value * 1024)
 #define MB(value) (kB(value) * 1024)
 
+// File Paths
 #define FILE_INFOS \
     { "data/mqtt_senzemo_cx_bg.json", 0, 0, 0 }, \
     { "data/senzemo_cx_bg.json",      0, 0, 0 }
@@ -13,9 +14,27 @@
 
 #define LOG_PATH "logs/analysis.log"
 
-#define MESSAGE_LEN 64
-#define MAX_LOG_MESSAGES MB(2)
-#define MAX_RECORDS MB(2)
+// Log_Buffer
+#define MESSAGE_LEN 256
+#define MAX_LOG_MESSAGES 32
+
+// Record_Buffer
+#define MAX_RECORDS 32
+
+// HashSet
+#define TABLE_SIZE kB(16)
+
+// City
+#define SPREADING_FACTOR_COUNT 6
+
+typedef struct Node {
+    char *key;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *buckets[TABLE_SIZE];
+} HashSet;
 
 typedef struct {
     char messages[MAX_LOG_MESSAGES][MESSAGE_LEN];   // buffer circular
@@ -72,12 +91,14 @@ typedef struct {
     double battery_final;
     time_t period_end;
 
-    int spreading_factors[6];
+    int spreading_factors[SPREADING_FACTOR_COUNT];
 } City;
 
 extern City bento;
 extern City caxias;
 extern Log_Buffer log_buffer;
 extern Record_Buffer rec_buffer;
+extern HashSet visited;
+
 extern File_Info files[];
 extern const int num_files;

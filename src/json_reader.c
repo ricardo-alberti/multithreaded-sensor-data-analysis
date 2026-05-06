@@ -1,10 +1,22 @@
+static bool
+is_duplicate(HashSet* visited, const char* val_str)
+{
+    if (!hashset_contains(visited, val_str))
+    {
+        hashset_add(visited, val_str); // marcar como visto
+        return false; // não é um duplicado
+    }
+
+    return true;
+}
+
 void*
 read_json(void *arg)
 {
-    File_Info *file = (File_Info*)arg;
-
-    const char *path_str = file->path;
     char log_msg[MESSAGE_LEN];
+
+    File_Info *file = (File_Info*)arg;
+    const char *path_str = file->path;
 
     yyjson_read_flag flg = YYJSON_READ_INSITU;
     yyjson_read_err err;
@@ -26,18 +38,29 @@ read_json(void *arg)
 
     while ((item = yyjson_arr_iter_next(&arr_iter)))
     {
+        const yyjson_val *id_val = yyjson_obj_get(item, "payload_id") ? 
+                                   yyjson_obj_get(item, "payload_id") : 
+                                   yyjson_obj_get(item, "id");
+
         yyjson_val *val = yyjson_obj_get(item, "payload");
         if (!val) val = yyjson_obj_get(item, "brute_data");
 
         if (val)
         {
             const char *val_str = yyjson_get_str(val);
+
+            if (is_duplicate(&visited, val_str))
+            {
+                snprintf(log_msg, sizeof(log_msg), "DUP: %s [ID %d]", path_str, yyjson_get_int(id_val));
+                log_push(log_msg);
+                continue; // pular registros duplicados
+            }
+
             if (val_str)
             {
                 yyjson_doc *payload_doc = yyjson_read(val_str, strlen(val_str), 0);
                 if (payload_doc)
                 {
-                    // enviar payload/brute_data para a fila de cálculo de estatísticas
                     record_push(payload_doc);
                     file->records_count++;
                 }
