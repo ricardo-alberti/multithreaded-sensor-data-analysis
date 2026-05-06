@@ -15,7 +15,7 @@
 #define LOG_PATH "logs/analysis.log"
 
 // Log_Buffer
-#define MESSAGE_LEN 256
+#define MESSAGE_LEN 64
 #define MAX_LOG_MESSAGES 32
 
 // Record_Buffer

@@ -13,8 +13,6 @@ is_duplicate(HashSet* visited, const char* val_str)
 void*
 read_json(void *arg)
 {
-    char log_msg[MESSAGE_LEN];
-
     File_Info *file = (File_Info*)arg;
     const char *path_str = file->path;
 
@@ -28,8 +26,7 @@ read_json(void *arg)
         return NULL;
     }
 
-    snprintf(log_msg, sizeof(log_msg), "Processando: %s", path_str);
-    log_push(log_msg);    
+    log_push("Processando: %s", path_str);
 
     yyjson_val *root = yyjson_doc_get_root(doc);
     yyjson_val *item;
@@ -51,8 +48,7 @@ read_json(void *arg)
 
             if (is_duplicate(&visited, val_str))
             {
-                snprintf(log_msg, sizeof(log_msg), "DUP: %s [ID %d]", path_str, yyjson_get_int(id_val));
-                log_push(log_msg);
+                log_push("DUP: %s [ID %d]", path_str, yyjson_get_int(id_val));
                 continue; // pular registros duplicados
             }
 
@@ -69,8 +65,7 @@ read_json(void *arg)
     }
 
     // criar log de arquivo lido
-    snprintf(log_msg, sizeof(log_msg), "Concluído: %s", path_str);
-    log_push(log_msg);    
+    log_push("Concluído: %s", path_str);
 
     yyjson_doc_free(doc);
     return NULL; 

@@ -1,5 +1,5 @@
 void
-log_push(char* message)
+log_push(const char *fmt, ...)
 {
     pthread_mutex_lock(&log_buffer.lock);
 
@@ -8,9 +8,12 @@ log_push(char* message)
         pthread_cond_wait(&log_buffer.not_full, &log_buffer.lock);
     }
 
-    // copiar mensagem para buffer circular
-    snprintf(log_buffer.messages[log_buffer.head], MESSAGE_LEN, "%s", message);
-    
+    // formatar mensagem usando va_list
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(log_buffer.messages[log_buffer.head], MESSAGE_LEN, fmt, args);
+    va_end(args);
+
     log_buffer.head = (log_buffer.head + 1) % MAX_LOG_MESSAGES;
     log_buffer.count++;
 

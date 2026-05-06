@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <stdarg.h>          // para funções variádicas (log_push)
 
 #include "yyjson.h"          // biblioteca para leitura de json
 #include "analyser.h"        // defines e structs do programa
