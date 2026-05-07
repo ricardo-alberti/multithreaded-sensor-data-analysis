@@ -49,7 +49,7 @@ format_time(time_t t, char *out_buf)
     }
 
     struct tm *tm_info = localtime(&t);
-    strftime(out_buf, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+    strftime(out_buf, 20, "%d/%m/%Y %H:%M:%S", tm_info);
 }
 
 // calcula a média
@@ -66,7 +66,7 @@ calculate_execution_time(struct timespec start)
     struct timespec end;
     clock_gettime(CLOCK_MONOTONIC, &end);
 
-    return (end.tv_sec - start.tv_sec) + 
+    return (end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec) / 1e9;
 }
 
