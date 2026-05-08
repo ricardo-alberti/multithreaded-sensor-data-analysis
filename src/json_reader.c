@@ -1,15 +1,3 @@
-static bool
-is_duplicate(HashSet* visited, const char* val_str)
-{
-    if (!hashset_contains(visited, val_str))
-    {
-        hashset_add(visited, val_str); // marcar como visto
-        return false; // não é um duplicado
-    }
-
-    return true;
-}
-
 void*
 read_json(void *arg)
 {
@@ -46,12 +34,14 @@ read_json(void *arg)
         {
             const char *val_str = yyjson_get_str(val);
 
-            if (is_duplicate(&visited, val_str))
+            if (hashset_contains(&visited, val_str))
             {
                 log_push("DUP: %s [ID %d]", path_str, yyjson_get_int(id_val));
                 continue; // pular registros duplicados
             }
 
+            hashset_add(&visited, val_str); // marcar como visto
+                                           
             if (val_str)
             {
                 yyjson_doc *payload_doc = yyjson_read(val_str, strlen(val_str), 0);

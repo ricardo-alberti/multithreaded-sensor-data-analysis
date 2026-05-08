@@ -17,8 +17,8 @@ parse_iso8601(const char *s)
     long long days = (365LL * year) + (year / 4) - (year / 100) + (year / 400) +
                      (306 * (month + 1) / 10) + day - 719561;
 
-    // TODO: configurar o fuso horário no inicio do programa, para não precisar adicionar 3 horas aqui
-    return (time_t)(days * 86400LL + hour * 3600 + min * 60 + sec) + 3 * 3600;
+    // retornar UTC timestamp
+    return (time_t)(days * 86400LL + hour * 3600 + min * 60 + sec);
 }
 
 void
