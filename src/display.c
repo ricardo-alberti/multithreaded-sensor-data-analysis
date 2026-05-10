@@ -92,18 +92,13 @@ print_header()
 void
 print_file_info(const File_Info *file)
 {
-    char period_start_str[26];
-    char period_end_str[26];
-
-    format_time(file->period_start, period_start_str);
-    format_time(file->period_end, period_end_str);
-
     printf("Arquivo analisado: %s\n", file->path);
     printf("Total de registros processados: %d\n", file->records_count);
+
     printf(
         "Período analisado: %s a %s\n\n",
-        period_start_str,
-        period_end_str
+        file->period_start,
+        file->period_end
     );
 }
 

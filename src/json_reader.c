@@ -1,3 +1,22 @@
+static void
+format_iso8601_date_br(const char *iso, char out[11])
+{
+    out[0] = iso[8];
+    out[1] = iso[9];
+    out[2] = '/';
+
+    out[3] = iso[5];
+    out[4] = iso[6];
+    out[5] = '/';
+
+    out[6] = iso[0];
+    out[7] = iso[1];
+    out[8] = iso[2];
+    out[9] = iso[3];
+
+    out[10] = '\0';
+}
+
 void*
 read_json(void *arg)
 {
@@ -17,6 +36,32 @@ read_json(void *arg)
     log_push("Processando: %s", path_str);
 
     yyjson_val *root = yyjson_doc_get_root(doc);
+
+    yyjson_val *first = yyjson_arr_get_first(root);
+    yyjson_val *last = yyjson_arr_get_last(root);
+
+    if (first && last)
+    {
+        const char *first_date = yyjson_get_str(
+                yyjson_obj_get(first, file->date_field)
+            );
+
+        const char *last_date = yyjson_get_str(
+                yyjson_obj_get(last, file->date_field)
+            );
+
+        if (file->ascending_order)
+        {
+            format_iso8601_date_br(first_date, file->period_start);
+            format_iso8601_date_br(last_date, file->period_end);
+        }
+        else
+        {
+            format_iso8601_date_br(last_date, file->period_start);
+            format_iso8601_date_br(first_date, file->period_end);
+        }
+    }
+
     yyjson_val *item;
     yyjson_arr_iter arr_iter;
     yyjson_arr_iter_init(root, &arr_iter);
