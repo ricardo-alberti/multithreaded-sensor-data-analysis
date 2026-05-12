@@ -27,13 +27,14 @@
 // City
 #define SPREADING_FACTOR_COUNT 6
 
-typedef struct Node {
-    char *key;
-    struct Node *next;
-} Node;
+typedef struct {
+    char* key;
+} HashEntry;
 
 typedef struct {
-    Node *buckets[TABLE_SIZE];
+    HashEntry* table;
+    unsigned long size;
+    unsigned long count;
 } HashSet;
 
 typedef struct {
