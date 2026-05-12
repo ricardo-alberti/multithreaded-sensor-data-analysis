@@ -22,7 +22,7 @@ File_Info files[] = { FILE_INFOS };
 const int num_files = sizeof(files) / sizeof(files[0]);
 
 static void
-init_city(City *city)
+city_init(City *city)
 {
     city->lower_temp = INT_MAX;
     city->higher_temp = INT_MIN;
@@ -41,8 +41,8 @@ main()
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     hashset_init(&visited, kB(64));
-    init_city(&bento);
-    init_city(&caxias);
+    city_init(&bento);
+    city_init(&caxias);
 
     analyse(files, num_files);
 
