@@ -22,7 +22,7 @@
 #define MAX_RECORDS 32
 
 // HashSet
-#define TABLE_SIZE kB(16)
+#define TABLE_SIZE kB(64)
 
 // City
 #define SPREADING_FACTOR_COUNT 6

@@ -26,7 +26,7 @@ hashset_add(HashSet* set, const char* key)
     if (set->count >= set->size)
     {
         log_push("Tamanho do HashSet excedido");
-        // resize_table(set); 
+        exit(1);
     }
 
     unsigned long index = hash_function(key) % set->size;

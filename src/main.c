@@ -4,6 +4,7 @@
 #include "yyjson.h"          // biblioteca para leitura de json
 #include "analyser.h"        // defines e structs do programa
 
+#include "helper.c"          // funções utilitárias 
 #include "logger.c"          // gravação de logs
 #include "hashset.c"         // implementação de hash set para evitar processar arquivos repetidos
 #include "record_resolver.c" // cálculo das estatísticas
@@ -16,7 +17,6 @@ City caxias = { 0 };
 Log_Buffer log_buffer = { 0 };
 Record_Buffer rec_buffer = { 0 };
 HashSet visited = { 0 };
-
 
 File_Info files[] = { FILE_INFOS };
 const int num_files = sizeof(files) / sizeof(files[0]);
@@ -40,7 +40,7 @@ main()
     struct timespec start;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    hashset_init(&visited, kB(64));
+    hashset_init(&visited, kB(TABLE_SIZE));
     city_init(&bento);
     city_init(&caxias);
 
