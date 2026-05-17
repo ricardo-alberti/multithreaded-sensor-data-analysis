@@ -37,6 +37,8 @@ logger(void* path)
     pthread_cond_init(&log_buffer.not_empty, NULL);
     pthread_cond_init(&log_buffer.not_full, NULL);
 
+    log_push("Logger thread iniciada, log em: %s", file_path);
+
     for (;;)
     {
         pthread_mutex_lock(&log_buffer.lock);

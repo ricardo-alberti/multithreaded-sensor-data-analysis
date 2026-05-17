@@ -131,6 +131,12 @@ read_json(void *arg)
         char unique_key[128] = { 0 };
         if (!generate_unique_key(yyjson_doc_get_root(payload_doc), unique_key, sizeof(unique_key)))
         {
+            log_push(
+                "SKIP: %s [ID %d] Sem dados válidos",
+                path_str,
+                yyjson_get_int(yyjson_obj_get(item, "id"))
+            );
+
             yyjson_doc_free(payload_doc);
             continue;
         }

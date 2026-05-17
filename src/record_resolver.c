@@ -136,6 +136,8 @@ record_resolver(void* args)
 
     (void)args;
 
+    log_push("Record resolver thread iniciada");
+
     for (;;)
     {
         yyjson_doc* doc = record_pop();
