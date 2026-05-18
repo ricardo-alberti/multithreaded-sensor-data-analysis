@@ -47,25 +47,6 @@ generate_unique_key(yyjson_val *payload_root, char *out_key, size_t max_len)
 }
 
 static void
-format_iso8601_date_br(const char *iso, char out[11])
-{
-    out[0] = iso[8];
-    out[1] = iso[9];
-    out[2] = '/';
-
-    out[3] = iso[5];
-    out[4] = iso[6];
-    out[5] = '/';
-
-    out[6] = iso[0];
-    out[7] = iso[1];
-    out[8] = iso[2];
-    out[9] = iso[3];
-
-    out[10] = '\0';
-}
-
-static void
 set_file_period(File_Info *file, yyjson_val *root)
 {
     const yyjson_val *first = yyjson_arr_get_first(root);

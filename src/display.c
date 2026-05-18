@@ -21,55 +21,6 @@
 #define COL_HEADER_BATTERY  "Cidade            | Inicial (V) | Final (V) | Consumo (V)"
 #define COL_HEADER_SF       "Cidade            | SF utilizados"
 
-// ajusta a largura de impressão de strings UTF-8 no terminal
-int
-utf8_field_width(const char *str, int field_width)
-{
-    int extra = 0;
-
-    for (const char *p = str; *p; p++)
-    {
-        if ((*p & 0xC0) == 0x80)
-        {
-            extra++;
-        }
-    }
-
-    return field_width + extra;
-}
-
-// formata um time_t em uma string legível
-void
-format_time(time_t t, char *out_buf)
-{
-    if (t == 0)
-    {
-        strcpy(out_buf, "N/A");
-        return;
-    }
-
-    struct tm *tm_info = localtime(&t);
-    strftime(out_buf, 20, "%d/%m/%Y %H:%M:%S", tm_info);
-}
-
-// calcula a média
-double
-calculate_average(double sum, double count)
-{
-    return (count > 0) ? sum / count : 0.0;
-}
-
-// calcula o tempo de execução do programa
-double
-calculate_execution_time(struct timespec start)
-{
-    struct timespec end;
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    return (end.tv_sec - start.tv_sec) +
-           (end.tv_nsec - start.tv_nsec) / 1e9;
-}
-
 // imprime separador
 void
 print_separator(const char *color, const char *sep)
