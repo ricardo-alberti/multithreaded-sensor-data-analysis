@@ -123,7 +123,7 @@ read_json(void *arg)
             continue;
         }
 
-        if (hashset_contains(&visited, val_str))
+        if (hashset_contains(&visited, unique_key))
         {
             const yyjson_val *id_val =
                 yyjson_obj_get(item, "payload_id") ?
@@ -141,7 +141,7 @@ read_json(void *arg)
             continue;
         }
 
-        hashset_add(&visited, val_str);                                       
+        hashset_add(&visited, unique_key);                                       
 
         record_push(payload_doc);
         file->records_count++;
