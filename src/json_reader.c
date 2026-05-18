@@ -21,7 +21,8 @@ generate_unique_key(yyjson_val *payload_root, char *out_key, size_t max_len)
             
             if (!variable || 
                 (strcmp(variable, "temperature") != 0 && 
-                 strcmp(variable, "humidity") != 0))
+                 strcmp(variable, "humidity") != 0 &&
+                 strcmp(variable, "lora_spreading_factor") != 0))
             {
                 continue; 
             }
