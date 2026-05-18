@@ -2,15 +2,15 @@
 #define MB(value) (kB(value) * 1024)
 
 // File Paths
-/*
 #define FILE_INFOS \
     { "data/mqtt_senzemo_cx_bg.json", 0, {0}, {0}, true,  "created_at"   }, \
     { "data/senzemo_cx_bg.json",      0, {0}, {0}, false, "payload_date" }
-*/
 
+/*
 #define FILE_INFOS \
     { "data/test_mqtt_senzemo_cx_bg.json", 0, {0}, {0}, true,  "created_at"   }, \
     { "data/test_senzemo_cx_bg.json",      0, {0}, {0}, false, "payload_date" }
+*/
 
 #define LOG_PATH "logs/analysis.log"
 
